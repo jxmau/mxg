@@ -1,6 +1,6 @@
 use crate::{Message, message::Kind};
 
-
+#[derive(Debug, Default, Clone)]
 pub struct Buffer<T: Message>{
     error_ct : u8,
     warn_ct : u8,
@@ -8,7 +8,7 @@ pub struct Buffer<T: Message>{
     msgs: Vec<T>,
 }
 
-impl<T: Message> Buffer<T> {
+impl<T:  Message> Buffer<T> {
 
     /// Return a new Buffer with a limit of error of 20.
     pub fn new() -> Self {
@@ -34,7 +34,6 @@ impl<T: Message> Buffer<T> {
         if self.error_ct.eq(&self.err_limit) {
             println!("{}", ansi_term::Colour::Red.paint("Early return caused by the limit of error messages having been reached."));
             drop(self);
-            return;
         }
     }
 
@@ -42,8 +41,7 @@ impl<T: Message> Buffer<T> {
 
 }
 
-impl<T> Drop for Buffer<T>
-where T: Message 
+impl<T: Message> Drop for Buffer<T>
 {
 
     fn drop(&mut self) {

@@ -2,6 +2,10 @@ use message::Kind;
 
 pub mod message;
 pub mod buffer;
+#[cfg(feature= "info")]
+#[unstable(feature=info, reason="The struct used in this feature is not integrated into the normal overall workflow. Changes can happen.")]
+pub mod info;
+
 
 pub trait Message {
     fn consume(&self);
