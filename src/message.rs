@@ -1,30 +1,12 @@
 
-use ansi_term::Colour::{Red, Green, Yellow, White};
+use std::fmt::Debug;
+
+use ansi_term::Colour::{Red, Green, Yellow};
+use crate::kind::Kind;
 
 use crate::Add;
 
-#[derive(Debug, Clone)]
-pub enum Kind  {
-    Info,
-    Warning, 
-    Error,
-    Valid
-}
-
-impl Kind {
-
-    pub fn get_title(&self, msg: &str) -> String {
-        let s = match self {
-            Kind::Info => White.paint(msg),
-            Kind::Warning => Yellow.paint(msg),
-            Kind::Error => Red.paint(msg),
-            Kind::Valid => Green.paint(msg),
-        };
-        s.to_string()
-    }
-
-}
-
+#[derive(Debug)]
 pub struct DebugMessage{
     kind: Kind,
     title: String,
@@ -42,7 +24,7 @@ impl DebugMessage {
         let line = format!("l.{} | ", line_nb);
         let mut subline = String::new();
         subline.add_patt(" ", line.len());
-        DebugMessage {kind: kind.clone(), title: kind.get_title(&title).to_string(), line, explain: String::new(), subline }
+        DebugMessage {kind: kind.clone(), title: kind.get_title(title), line, explain: String::new(), subline }
     }
 
     /// Will create a prefix for the title with the name of the file, the line and the column where the error is located and/or starts.
@@ -104,4 +86,15 @@ impl crate::Message for DebugMessage {
 
 }
 
+// impl crate::SMessage for DebugMessage {}
 
+
+#[cfg(feature= "buffless")]
+impl Drop for DebugMessage {
+    
+    fn drop(&mut self) {
+        println!("{}\n\n    {}\n    {}\n\n   {}\n", self.title, self.line, self.subline, self.explain);
+    }
+}
+
+impl super::Boxable for DebugMessage {}

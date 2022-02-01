@@ -1,14 +1,16 @@
-use crate::{Message, message::Kind};
 
-#[derive(Debug, Default, Clone)]
-pub struct Buffer<T: Message>{
+use crate::kind::Kind;
+use crate::Msg;
+
+#[derive(Default)]
+pub struct Buffer{
     error_ct : u8,
     warn_ct : u8,
     err_limit : u8,
-    msgs: Vec<T>,
+    msgs: Vec<Msg>,
 }
 
-impl<T:  Message> Buffer<T> {
+impl Buffer {
 
     /// Return a new Buffer with a limit of error of 20.
     pub fn new() -> Self {
@@ -24,16 +26,18 @@ impl<T:  Message> Buffer<T> {
     /// Add the Message to the buffer.
     /// If adding the message causing the limit to be reached. 
     /// The buffer will self-drop, casuing an early return.
-    pub fn link(&mut self, m: T) {
+    pub fn link(&mut self, m: Msg) {
         match m.kind() {
             Kind::Error => self.error_ct += 1,
             Kind::Warning => self.warn_ct += 1,
             _ => {}
         };
         self.msgs.push(m);
+        
+        // If the limit is reached, the Buffer is self-drop to consume it.
         if self.error_ct.eq(&self.err_limit) {
             println!("{}", ansi_term::Colour::Red.paint("Early return caused by the limit of error messages having been reached."));
-            drop(self);
+            drop(self); 
         }
     }
 
@@ -41,7 +45,7 @@ impl<T:  Message> Buffer<T> {
 
 }
 
-impl<T: Message> Drop for Buffer<T>
+impl Drop for Buffer
 {
 
     fn drop(&mut self) {

@@ -1,4 +1,4 @@
-use crate::{message::Kind, Message};
+use crate::{kind::Kind, Message};
 
 /// Info Struct used to pass informations when not debugging.
 /// This struct cannot be added to the Buffer yet. 
@@ -43,8 +43,11 @@ impl Message for InfoMessage {
     }
 }
 
+#[cfg(feature= "buffless")]
 impl Drop for InfoMessage {
     fn drop(&mut self) {
         self.consume()
     }
 }
+
+impl super::Boxable for InfoMessage {}

@@ -10,6 +10,15 @@ ansi_term = "0.12.1"
 
 
 [features]
-default = []
+default = ["buffer"]
 full = ["info"]
+
+# Info Message
 info= []
+
+# Buffer
+buffer= []
+
+# Without the Buffer, the Drop is implemented
+buffless= []
+
