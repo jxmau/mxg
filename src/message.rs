@@ -6,7 +6,7 @@ use crate::kind::Kind;
 
 use crate::Add;
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct DebugMessage{
     kind: Kind,
     title: String,
@@ -62,6 +62,28 @@ impl DebugMessage {
         self.line.push_str(&Yellow.paint(hl).to_string());
         self.subline.add_patt(&Yellow.paint("^").to_string(), hl.len());
         self
+    }
+
+    pub fn point_to_word(&mut self, correct: &str, word: &str) -> &mut Self{
+        self.line.push_str(&correct);
+        let correct = correct.split(" ");
+        for w in correct {
+            let l = w.len();
+
+            if w.eq(word) {
+                self.subline.add_patt(&Red.paint("^").to_string(), l);
+                break
+            } else {
+                self.subline.add_patt(" ".into(), l+1);
+            }
+        }        
+        self
+    }
+
+    pub fn truncate(&mut self, correct: &str, full: &str) -> &mut Self {
+        Self::append(self, correct);
+        Self::remove(self, full.trim_start_matches(correct));
+        self 
     }
 
     /// Append an explanation displayed after the query.

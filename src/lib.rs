@@ -33,12 +33,12 @@ impl Add for String {
 
 
 /// Trait to simplify Boxing a Message.
-pub trait Boxable{
+pub trait Boxable: Clone{
 
     /// Will return Self boxed.
     /// To not use on a method returning &mut Self or it will throw a compiler error.
-    fn boxed( &mut self) -> Box<&mut Self> {
-        Box::new(self)
+    fn boxed(&mut self) -> Box<Self> {
+        Box::new(self.clone())
     }
 
 }
